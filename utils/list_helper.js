@@ -7,4 +7,13 @@ const totalLikes = arr => {
   return total
 }
 
-module.exports = {dummy,totalLikes}
+const favoriteBlog = arr =>{
+  let fav = arr.reduce((best,current)=>{
+    const mostLiked = best ? ((current.likes>best.likes) ? current : best) : current
+    return mostLiked
+  },null)
+  const {_id,__v,url,...favBlogInfo} = fav
+  return favBlogInfo
+}
+
+module.exports = {dummy,totalLikes,favoriteBlog}
