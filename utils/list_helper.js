@@ -1,3 +1,6 @@
+const {info,errorInfo} = require('./logger')
+var _ = require('lodash')
+
 const dummy = arr => {
   return 1
 }
@@ -16,4 +19,14 @@ const favoriteBlog = arr =>{
   return favBlogInfo
 }
 
-module.exports = {dummy,totalLikes,favoriteBlog}
+const mostBlogs = arr => {
+  const grouped = Object.entries(_.groupBy(arr,blog=>blog.author))
+  const maxed = _.maxBy(grouped,author_blogs=>{
+    return author_blogs[1].length
+  })
+  return {author:maxed[0],blogs:maxed[1].length}
+}
+
+
+
+module.exports = {dummy,totalLikes,favoriteBlog,mostBlogs}
