@@ -10,11 +10,11 @@ const blogSchema = new mongoose.Schema({
 })
 
 const Blog = mongoose.model('Blog',blogSchema)
-
+/*
 mongoose.connect(MONGODB_URI).then(result=>{
-  info("connection completed")
+  //info("connection completed")
 }).catch(error=>{
   errorInfo("connect failed",error.name)
-})
+})*/
 
 module.exports = {Blog}
