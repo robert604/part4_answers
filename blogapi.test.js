@@ -28,35 +28,56 @@ const initialBlogs = [
 
 ]
 
-beforeAll(async ()=>{
-  await mongoose.connect(MONGODB_URI)
-  await Blog.deleteMany({})  
-  const p = initialBlogs.map(blog=>{
-    const b = new Blog(blog)
-    return b.save()
-  })
-  Promise.all(p)
+var beforeAllPromise
+beforeAll(()=>{
+  beforeAllPromise = mongoose.connect(MONGODB_URI)
+
 })
 
+var beforeEachPromise
 beforeEach(async ()=>{
-
+  await beforeAllPromise
+  await Blog.deleteMany({})
+  const promises = initialBlogs.map(blog=>{
+    return new Blog(blog).save()
+  })
+  beforeEachPromise = Promise.all(promises)
 })
 
 test('blogs returned as json',async ()=>{
+  await beforeEachPromise
   await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
 },10000)
 
 test('blogs count test',async ()=>{
+  await beforeEachPromise
   const response = await api.get('/api/blogs')
   const blogs = JSON.parse(response.text)
-  expect(blogs.length).toBe(initialBlogs.length)
+  expect(blogs.length).toBe(initialBlogs.length)  
 },10000)
 
 test('id property is id',async ()=>{
+  await beforeEachPromise  
   const response = await api.get('/api/blogs')
   const blogs = JSON.parse(response.text)
   expect(blogs[0].id).toBeDefined()
 },10000)
+
+test('add a blog and verify',async ()=>{
+  await beforeEachPromise
+  const blogToAdd = {
+    title: "new title",
+    author: "new author",
+    url: "new url",
+    likes: 12,
+  }  
+  let response = await api.post('/api/blogs').send(blogToAdd)
+  expect(response.status).toBe(201)
+  const {id,...saved} = response.body
+  expect(saved).toEqual(blogToAdd)  
+  response = await api.get('/api/blogs')
+  expect(response.body.length).toBe(initialBlogs.length+1)
+})
 
 afterAll(()=>{
   mongoose.connection.close()
