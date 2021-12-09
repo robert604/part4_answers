@@ -92,6 +92,26 @@ test('no likes defaults to zero likes',async ()=>{
   expect(saved.likes).toBe(0)  
 })
 
+test('respond with 400 for missing title or url',async ()=>{
+  await beforeEachPromise
+  let response = await api.post('/api/blogs').send(
+    {
+      author: "new author",
+      url: "new url",
+      likes: 12,    
+    }
+  )
+  expect(response.status).toBe(400)
+  response = await api.post('/api/blogs').send(
+    {
+      title: "new title",
+      author: "new author",      
+      likes: 12,    
+    }
+  )
+  expect(response.status).toBe(400)    
+},10000)
+
 afterAll(()=>{
   mongoose.connection.close()
 })
