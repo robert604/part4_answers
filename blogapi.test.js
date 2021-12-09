@@ -28,15 +28,8 @@ const initialBlogs = [
 
 ]
 
-var beforeAllPromise
-beforeAll(()=>{
-  beforeAllPromise = mongoose.connect(MONGODB_URI)
-
-})
-
 var beforeEachPromise
 beforeEach(async ()=>{
-  await beforeAllPromise
   await Blog.deleteMany({})
   const promises = initialBlogs.map(blog=>{
     return new Blog(blog).save()
