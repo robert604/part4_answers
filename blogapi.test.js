@@ -79,6 +79,19 @@ test('add a blog and verify',async ()=>{
   expect(response.body.length).toBe(initialBlogs.length+1)
 })
 
+test('no likes defaults to zero likes',async ()=>{
+  await beforeEachPromise
+  const blogToAdd = {
+    title: "new title",
+    author: "new author",
+    url: "new url",
+  } 
+  let response = await api.post('/api/blogs').send(blogToAdd)
+  expect(response.status).toBe(201)
+  const {id,...saved} = response.body
+  expect(saved.likes).toBe(0)  
+})
+
 afterAll(()=>{
   mongoose.connection.close()
 })
