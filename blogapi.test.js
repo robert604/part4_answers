@@ -52,6 +52,12 @@ test('blogs count test',async ()=>{
   expect(blogs.length).toBe(initialBlogs.length)
 },10000)
 
+test('id property is id',async ()=>{
+  const response = await api.get('/api/blogs')
+  const blogs = JSON.parse(response.text)
+  expect(blogs[0].id).toBeDefined()
+},10000)
+
 afterAll(()=>{
   mongoose.connection.close()
 })
