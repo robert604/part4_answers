@@ -4,13 +4,14 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "another title",
-  "author": "another author",
-  "url": "another url",
-  "likes": 99
+  "title": "another title---",
+  "author": "another author---",
+  "url": "another url---",
+  "likes": 99,
+  "userId": "61b36330ce1ed411633d8fdc"
 }
 ###
-DELETE http://localhost:3003/api/blogs/61ae7a1bdb69e6cd9fb3a06e
+DELETE http://localhost:3003/api/blogs/61b39fd49d1ae6a7d507d686
 ###
 PUT http://localhost:3003/api/blogs/61b23cc22d7004249af5e03b
 Content-Type: application/json
@@ -20,4 +21,16 @@ Content-Type: application/json
   "author": "another author-",
   "url": "another url-",
   "likes": 99
+}
+###
+GET http://localhost:3003/api/users
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "notes": [],
+  "username": "root",
+  "name": "Superuser",
+  "password": "suppass"
 }

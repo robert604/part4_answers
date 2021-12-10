@@ -1,6 +1,7 @@
 const express = require('express')
 const { Blog } = require('../models/blog')
-
+const User = require('../models/user')
+const {info,errorInfo} = require('../utils/logger')
 const blogsRouter = express.Router()
 
 
@@ -10,7 +11,7 @@ blogsRouter.get('/',(req,res)=>{
   })
 })
 
-blogsRouter.post('/',(req,res)=>{
+blogsRouter.post('/',async (req,res)=>{
   let blogData = req.body
   if(!('likes' in blogData)) blogData = {...blogData,likes:0}
   if(!('title' in blogData)) {
@@ -21,11 +22,14 @@ blogsRouter.post('/',(req,res)=>{
     res.status(400).end()
     return
   }
-  const blog = new Blog(blogData)
+  const user = await User.findById(blogData.userId)
+  const {userId,...blogData1} = {...blogData,user: user._id}
+  const blog = new Blog(blogData1)
 
-  blog.save().then(newblog=>{
-    res.status(201).json(blog)
-  })
+  const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+  res.json(savedBlog)
 })
 
 blogsRouter.delete('/:id',async (req,res)=>{
