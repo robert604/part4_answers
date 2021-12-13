@@ -3,6 +3,7 @@ const { Blog } = require('../models/blog')
 const User = require('../models/user')
 const {info,errorInfo} = require('../utils/logger')
 const blogsRouter = express.Router()
+const _ = require('lodash')
 
 
 blogsRouter.get('/',(req,res)=>{
@@ -12,6 +13,12 @@ blogsRouter.get('/',(req,res)=>{
 })
 
 blogsRouter.post('/',async (req,res)=>{
+  const requiredProps = ['title','author','url','user']
+  const inter = _.intersectionWith(requiredProps,Object.keys(req.body),_.isEqual)
+  if(inter.length!==requiredProps.length) {
+    res.status(400).send(`Must have the fields: ${requiredProps}`)
+    return
+  }
   let blogData = req.body
   if(!('likes' in blogData)) blogData = {...blogData,likes:0}
   if(!('title' in blogData)) {
@@ -22,14 +29,14 @@ blogsRouter.post('/',async (req,res)=>{
     res.status(400).end()
     return
   }
-  const user = await User.findById(blogData.userId)
-  const {userId,...blogData1} = {...blogData,user: user._id}
+  const user = await User.findById(blogData.user)
+  const {userId,...blogData1} = {...blogData,user: user.id}
   const blog = new Blog(blogData1)
 
   const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
+  user.blogs = user.blogs.concat(savedBlog.id)
   await user.save()
-  res.json(savedBlog)
+  res.status(201).json(savedBlog)
 })
 
 blogsRouter.delete('/:id',async (req,res)=>{

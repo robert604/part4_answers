@@ -8,7 +8,7 @@ Content-Type: application/json
   "author": "another author---",
   "url": "another url---",
   "likes": 99,
-  "userId": "61b36330ce1ed411633d8fdc"
+  "user": "61b36330ce1ed411633d8fdc"
 }
 ###
 DELETE http://localhost:3003/api/blogs/61b39fd49d1ae6a7d507d686
