@@ -100,8 +100,7 @@ describe('blog tests',()=>{
     const blogToAdd = {
       title: "new title",
       author: "new author",
-      url: "new url",
-      user: firstUserId      
+      url: "new url",    
     } 
     let response = await api.post('/api/blogs').send(blogToAdd)
     expect(response.status).toBe(201)
@@ -160,7 +159,7 @@ describe('validate adding a new user',()=>{
     expect(usersAtEnd).toHaveLength(usersAtStart.length+1)
     const usernames = usersAtEnd.map(u=>u.username)
     expect(usernames).toContain(newUser.username)
-  })  
+  },10000)  
   test('username must have at least 3 characters',async ()=>{
     const newUser = {
       username: 'ne',
@@ -201,7 +200,7 @@ describe('validate adding a new user',()=>{
     expect(result.text).toContain('Username must be unique')
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(1)
-  })  
+  },10000)  
 })
 
 afterAll(()=>{
