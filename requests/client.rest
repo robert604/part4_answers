@@ -22,15 +22,23 @@ Content-Type: application/json
   "url": "another url-",
   "likes": 99
 }
-###
+###################################
 GET http://localhost:3003/api/users
 ###
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "notes": [],
-  "username": "root",
-  "name": "Superuser",
+  "blogs": [],
+  "username": "beetroot1",
+  "name": "beetroot user",
   "password": "suppass"
+}
+#####################################
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username":"beetroot",
+  "password":"suppass"
 }
