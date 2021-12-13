@@ -4,7 +4,17 @@ const User = require('../models/user')
 const {info,errorInfo} = require('../utils/logger')
 const blogsRouter = express.Router()
 const _ = require('lodash')
+const jwt = require('jsonwebtoken')
 
+const getTokenInfoFromBearer = req => {
+  const authorization = req.get('authorization')
+  if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    const token =  authorization.substring(7)
+    const tokenInfo = jwt.verify(token,process.env.SECRET)
+    return tokenInfo
+  }
+  return null
+}
 
 blogsRouter.get('/',async (req,res)=>{
   const blogs = await Blog.find({}).populate('user',{name:1,username:1,id:1})
@@ -12,12 +22,19 @@ blogsRouter.get('/',async (req,res)=>{
 })
 
 blogsRouter.post('/',async (req,res)=>{
-  let blogData = req.body
-  if(!('user' in blogData)) {
+  const tokenInfo = getTokenInfoFromBearer(req)
+  if(!tokenInfo || !tokenInfo.id) {
+    return res.status(401).json({error: 'token missing or invalid'})
+  }
+  info('tokeninfo',tokenInfo)
+  info('req body',req.body)
+  let blogData = {...req.body,user:tokenInfo.id}
+  info('blogData',blogData)
+  /*if(!('user' in blogData)) {
     const users = await User.find({})
     const firstUserId = users[0].id
     blogData = {...blogData,user:firstUserId}
-  }
+  }*/
 
   const requiredProps = ['title','author','url','user']
   const inter = _.intersectionWith(requiredProps,Object.keys(blogData),_.isEqual)
@@ -41,7 +58,7 @@ blogsRouter.post('/',async (req,res)=>{
 
   const savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog.id)
-  await user.save()
+  await User.findByIdAndUpdate(user.id,{blogs:user.blogs})
   res.status(201).json(savedBlog)
 })
 
