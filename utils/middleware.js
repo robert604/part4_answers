@@ -8,11 +8,15 @@ const errorHandler = (error,req,res,next)=>{
 
 const tokenInfoExtractor = (req,res,next)=>{
   const authorization = req.get('authorization')
-  if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    const token =  authorization.substring(7)
-    const tokenInfo = jwt.verify(token,process.env.SECRET)
-    res.locals.tokenInfo = tokenInfo
-  } else {
+  try {
+    if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
+      const token =  authorization.substring(7)
+      const tokenInfo = jwt.verify(token,process.env.SECRET)
+      res.locals.tokenInfo = tokenInfo
+    } else {
+      res.locals.tokenInfo = null
+    }
+  } catch(error) {
     res.locals.tokenInfo = null
   }
   next()

@@ -12,7 +12,9 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJlZ
   "user": "61b36330ce1ed411633d8fdc"
 }
 ###
-DELETE http://localhost:3003/api/blogs/61b39fd49d1ae6a7d507d686
+DELETE http://localhost:3003/api/blogs/61b774ab3ac15ecf97b3b4a4
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJlZXRyb290IiwiaWQiOiI2MWI3NjgyZjU1YWYyN2I4YTA2ZWYzMzkiLCJpYXQiOjE2Mzk0ODcyMjJ9.lvvXO-0SQUDTYGEKLd05kJMzE09pjO_PICitdifVNPM
+
 ###
 PUT http://localhost:3003/api/blogs/61b23cc22d7004249af5e03b
 Content-Type: application/json

@@ -45,8 +45,16 @@ blogsRouter.post('/',async (req,res)=>{
 })
 
 blogsRouter.delete('/:id',async (req,res)=>{
-  const id = req.params.id
-  const result = await Blog.findByIdAndDelete(id)
+  const tokenInfo = res.locals.tokenInfo 
+  if(!tokenInfo || !tokenInfo.id) {
+    return res.status(401).json({error: 'token missing or invalid'})
+  }
+  const blogId = req.params.id  
+  const blog = await Blog.findById(blogId)
+  if(blog.user.toString()!==tokenInfo.id) {
+    return res.status(400).json({error:'blog was created by a different user'})
+  }
+  const result = await Blog.findByIdAndDelete(blogId)
   res.status(204).end()
 })
 
