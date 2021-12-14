@@ -4,6 +4,7 @@ const loginRouter = require('express').Router()
 const User = require('../models/user')
 const { indexOf } = require('lodash')
 const {info,errorInfo} = require('../utils/logger')
+const {makeUserToken} = require('../utils/helper')
 
 loginRouter.post('/',async (req,res)=>{
   const body = req.body
@@ -12,12 +13,8 @@ loginRouter.post('/',async (req,res)=>{
   if(!user || !password || !await bcrypt.compare(password,user.passwordHash)) {
     return res.status(401).json({error: 'invalid name or password'})
   }
-  const tokenInfo = {
-    username: user.username,
-    id: user._id
-  }
-  
-  const token = jwt.sign(tokenInfo,process.env.SECRET)
+
+  const token = makeUserToken(user.username,user._id)
   res.status(200).send({token,username:user.username,name:user.name})
 
 })

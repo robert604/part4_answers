@@ -13,7 +13,7 @@ app.use(morgan((tokens,req)=>{
 }))
 app.use(cors())
 
-app.use('/api/blogs',middleware.tokenInfoExtractor)
+
 app.use('/api/blogs',blogsRouter)
 app.use('/api/users',usersRouter)
 app.use('/api/login',loginRouter)

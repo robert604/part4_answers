@@ -9,7 +9,8 @@ const User = require('../models/user')
 const {usersInDb} = require('./test_helper')
 const bcrypt = require('bcrypt')
 const helper = require('./test_helper')
-const { forEach } = require('lodash')
+const { forEach, first } = require('lodash')
+const { makeUserToken } = require('../utils/helper')
 
 const initialBlogs = [
   {
@@ -41,8 +42,7 @@ const initialUsers = [
 ]
 
 describe('blog tests',()=>{
-  var beforeEachPromise
-  var firstUserId
+  var beforeEachPromise,firstUser,firstUserId
   beforeEach(()=>{
     beforeEachPromise = new Promise((resolve,reject)=>{
       (async ()=>{
@@ -51,6 +51,7 @@ describe('blog tests',()=>{
         await User.deleteMany({})
         for(user of initialUsers) await new User(user).save()
         const users = await User.find({})
+        firstUser = users[0]
         firstUserId = users[0].id
         resolve()
       })()
@@ -85,14 +86,33 @@ describe('blog tests',()=>{
       author: "new author",
       url: "new url",
       likes: 12,
-      user: firstUserId
-    }  
-    let response = await api.post('/api/blogs').send(blogToAdd)
+    }
+    
+    const user = await User.findOne({username:firstUser.username})
+    const token = makeUserToken(user.username,user.id)
+    const schemeToken = `bearer ${token}`
+
+    let response = await api.post('/api/blogs').send(blogToAdd).set({Authorization:schemeToken})
     expect(response.status).toBe(201)
     const {id,...saved} = response.body
+    blogToAdd.user = user.id
     expect(saved).toEqual(blogToAdd)  
     response = await api.get('/api/blogs')
     expect(response.body.length).toBe(initialBlogs.length+1)
+  },10000)
+
+  test('adding blog without token results in 401',async ()=>{
+    await beforeEachPromise
+    const blogToAdd = {
+      title: "new title",
+      author: "new author",
+      url: "new url",
+      likes: 12,
+    }
+
+    let response = await api.post('/api/blogs').send(blogToAdd)
+    expect(response.status).toBe(401)
+    
   },10000)
 
   test('no likes defaults to zero likes',async ()=>{
